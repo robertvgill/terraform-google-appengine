@@ -1,16 +1,17 @@
-## project
+## access token
 variable "google_access_token_file" {
   description = "Google Cloud access token file."
   type        = string
   sensitive   = true
 }
 
+## app engine
 variable "app_engine_create" {
   description = "Boolean flag which forces App Engine is created and use it for all resources."
   type        = bool
 }
 
-variable "project_id" {
+variable "project" {
   description = "(Required) The project ID to create the application under. ~>NOTE: GCP only accepts project ID, not project number. If you are using number, you may get a `Permission denied` error."
   type        = string
   default     = ""
