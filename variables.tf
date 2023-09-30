@@ -74,6 +74,11 @@ variable "firewall_rules" {
 }
 
 ## appengine standard
+variable "app_engine_standard_create" {
+  description = "Boolean flag which forces App Engine standard is created and use it for all resources."
+  type        = bool
+}
+
 variable "service_version" {
   description = "(Optional) Name of the App Engine version of the Service that will be deployed."
   type        = string
@@ -126,13 +131,13 @@ variable "env_variables" {
 }
 
 variable "noop_on_destroy" {
-  description = "(Optional; Default: True)If set to true, the application version will not be deleted upon running Terraform destroy."
+  description = "(Optional; Default: True) If set to true, the application version will not be deleted upon running Terraform destroy."
   type        = bool
   default     = true
 }
 
 variable "delete_service_on_destroy" {
-  description = "(Optional; Default: False)If set to true, the service will be deleted if it is the last version."
+  description = "(Optional; Default: False) If set to true, the service will be deleted if it is the last version."
   type        = bool
   default     = false
 }
@@ -236,8 +241,8 @@ variable "entrypoint" {
   default = null
 }
 
-variable "standard_automatic_scaling" {
-  description = "(Optional) Automatic scaling is based on request rate, response latencies, and other application metrics."
+variable "automatic_scaling_standard" {
+  description = "(Optional) Automatic scaling of the App Engine standard is based on request rate, response latencies, and other application metrics."
   type = object({
     create                  = bool,
     max_concurrent_requests = number,
@@ -268,36 +273,36 @@ variable "standard_automatic_scaling" {
   }
 
   validation {
-    condition     = !contains([for max_concurrent_requests in var.standard_automatic_scaling[*].max_concurrent_requests : (max_concurrent_requests >= 10 && max_concurrent_requests <= 80)], false)
+    condition     = !contains([for max_concurrent_requests in var.automatic_scaling_standard[*].max_concurrent_requests : (max_concurrent_requests >= 10 && max_concurrent_requests <= 80)], false)
     error_message = "The value of max_concurrent_requests must fall within range [10, 80]."
   }
   validation {
-    condition     = !contains([for max_idle_instances in var.standard_automatic_scaling[*].max_idle_instances : (max_idle_instances >= 1 && max_idle_instances <= 1000)], false)
+    condition     = !contains([for max_idle_instances in var.automatic_scaling_standard[*].max_idle_instances : (max_idle_instances >= 1 && max_idle_instances <= 1000)], false)
     error_message = "The value of max_idle_instances needs to fall within range [1, 1000]."
   }
   validation {
-    condition     = !contains([for min_idle_instances in var.standard_automatic_scaling[*].min_idle_instances : (min_idle_instances >= 1 && min_idle_instances <= 1000)], false)
+    condition     = !contains([for min_idle_instances in var.automatic_scaling_standard[*].min_idle_instances : (min_idle_instances >= 1 && min_idle_instances <= 1000)], false)
     error_message = "The value of min_idle_instances needs to be fall within range [1, 1000]."
   }
   validation {
-    condition     = !contains([for standard_scheduler_settings in var.standard_automatic_scaling[*].standard_scheduler_settings : contains([for target_cpu_utilization in standard_scheduler_settings[*].target_cpu_utilization : (target_cpu_utilization >= 0.5 && target_cpu_utilization <= 0.95)], false)], true)
+    condition     = !contains([for standard_scheduler_settings in var.automatic_scaling_standard[*].standard_scheduler_settings : contains([for target_cpu_utilization in standard_scheduler_settings[*].target_cpu_utilization : (target_cpu_utilization >= 0.5 && target_cpu_utilization <= 0.95)], false)], true)
     error_message = "The target_cpu_utilization value must fall within range [0.5, 0.95]."
   }
   validation {
-    condition     = !contains([for standard_scheduler_settings in var.standard_automatic_scaling[*].standard_scheduler_settings : contains([for target_throughput_utilization in standard_scheduler_settings[*].target_throughput_utilization : (target_throughput_utilization >= 0.5 && target_throughput_utilization <= 0.95)], false)], true)
+    condition     = !contains([for standard_scheduler_settings in var.automatic_scaling_standard[*].standard_scheduler_settings : contains([for target_throughput_utilization in standard_scheduler_settings[*].target_throughput_utilization : (target_throughput_utilization >= 0.5 && target_throughput_utilization <= 0.95)], false)], true)
     error_message = "The target_throughput_utilization value must fall within range [0.5, 0.95]."
   }
   validation {
-    condition     = !contains([for standard_scheduler_settings in var.standard_automatic_scaling[*].standard_scheduler_settings : contains([for min_instances in standard_scheduler_settings[*].target_throughput_utilization : (min_instances >= 0 && min_instances <= 1000)], false)], true)
+    condition     = !contains([for standard_scheduler_settings in var.automatic_scaling_standard[*].standard_scheduler_settings : contains([for min_instances in standard_scheduler_settings[*].target_throughput_utilization : (min_instances >= 0 && min_instances <= 1000)], false)], true)
     error_message = "The min_instances value must fall within range [0,1000]."
   }
   validation {
-    condition     = !contains([for standard_scheduler_settings in var.standard_automatic_scaling[*].standard_scheduler_settings : contains([for max_instances in standard_scheduler_settings[*].target_throughput_utilization : (max_instances >= 0 && max_instances <= 1000)], false)], true)
+    condition     = !contains([for standard_scheduler_settings in var.automatic_scaling_standard[*].standard_scheduler_settings : contains([for max_instances in standard_scheduler_settings[*].target_throughput_utilization : (max_instances >= 0 && max_instances <= 1000)], false)], true)
     error_message = "The max_instances value must fall within range [0,2147483647]."
   }
 }
 
-variable "standard_basic_scaling" {
+variable "basic_scaling_standard" {
   description = "(Optional) Basic scaling."
   type = object({
     create        = bool,
@@ -311,7 +316,7 @@ variable "standard_basic_scaling" {
   }
 }
 
-variable "standard_manual_scaling" {
+variable "manual_scaling_standard" {
   description = "(Optional) Manual scaling."
   type = object({
     create    = bool,
@@ -333,6 +338,291 @@ variable "vpc_access_connector" {
   validation {
     condition     = var.vpc_access_connector != null ? length(regexall("^\\bprojects\\b/[[:word:]-]+/\\blocations\\b/[[:word:]-]+/\\bconnectors\\b/[[:word:]-]+$", (var.vpc_access_connector.name == null ? "" : var.vpc_access_connector.name))) > 0 : true
     error_message = "Format of VPC access connector must use the following format `projects/[$PROJECT_NAME]/locations/[$CONNECTOR_LOCATION]/connectors/[$CONNECTOR_NAME]`."
+  }
+}
+
+## appengine flexible
+variable "app_engine_flexible_create" {
+  description = "Boolean flag which forces App Engine standard is created and use it for all resources."
+  type        = bool
+}
+
+variable "readiness_path" {
+  description = "(Required; Default `/readiness`) The request path."
+  type        = string
+  default     = "/readiness"
+}
+
+variable "readiness_host" {
+  description = "(Optional) Host header to send when performing a HTTP Readiness check."
+  type        = string
+  default     = null
+}
+
+variable "readiness_failure_threshold" {
+  description = "(Optional; Default 2) Number of consecutive failed checks required before removing traffic."
+  type        = number
+  default     = 2
+}
+
+variable "readiness_success_threshold" {
+  description = "(Optional; Default 2) Number of consecutive successful checks required before receiving traffic."
+  type        = number
+  default     = 2
+}
+
+variable "readiness_check_interval" {
+  description = "(Optional; Default `5s`) Interval between health checks."
+  type        = string
+  default     = "5s"
+}
+
+variable "readiness_timeout" {
+  description = "(Optional; Default `4s`) Time before the check is considered failed."
+  type        = string
+  default     = "4s"
+}
+
+variable "readiness_app_start_timeout" {
+  description = "(Optional; Default `300s`) A maximum time limit on application initialization, measured from moment the application successfully replies to a healthcheck until it is ready to serve traffic."
+  type        = string
+  default     = "300s"
+}
+
+variable "liveness_path" {
+  description = "(Required; Default `/liveness`) The request path."
+  type        = string
+  default     = "/liveness"
+}
+
+variable "liveness_host" {
+  description = "(Optional) Host header to send when performing a HTTP Readiness check."
+  type        = string
+  default     = null
+}
+
+variable "liveness_failure_threshold" {
+  description = "(Optional; Default 4) Number of consecutive failed checks required before removing traffic."
+  type        = number
+  default     = 4
+}
+
+variable "liveness_success_threshold" {
+  description = "(Optional; Default 2) Number of consecutive successful checks required before receiving traffic."
+  type        = number
+  default     = 2
+}
+
+variable "liveness_check_interval" {
+  description = "(Optional; Default `30s`) Interval between health checks."
+  type        = string
+  default     = "30ss"
+}
+
+variable "liveness_timeout" {
+  description = "(Optional; Default `4s`) Time before the check is considered failed."
+  type        = string
+  default     = "4s"
+}
+
+variable "liveness_initial_delay" {
+  description = "(Optional; Default `300s`) A maximum time limit on application initialization, measured from moment the application successfully replies to a healthcheck until it is ready to serve traffic."
+  type        = string
+  default     = "300s"
+}
+
+variable "network" {
+  description = "(Optional) Extra network settings to be defined for the App Engine service."
+  type = object({
+    forwarded_ports  = list(string),
+    instance_tag     = string,
+    name             = string,
+    subnetwork       = string,
+    session_affinity = bool
+  })
+  default = null
+}
+
+variable "resources" {
+  description = "(Optional) Machine resources for a version."
+  type = object({
+    cpu       = number,
+    disk_gb   = number,
+    memory_gb = number,
+    volumes = list(object({
+      name        = string,
+      volume_type = string,
+      size_gb     = number
+    }))
+  })
+  default = null
+
+  validation {
+    condition     = var.resources != null ? (var.resources.cpu == 1 || (var.resources.cpu >= 2 && var.resources.cpu <= 96 && var.resources.cpu / 2 == 0)) : true
+    error_message = "CPU must be 1 or an even number between 2 and 96."
+  }
+
+  validation {
+    condition     = var.resources != null ? (var.resources.disk_gb >= 10 && var.resources.disk_gb <= 10240) : true
+    error_message = "Disk size must be between 10GB and 10240GB."
+  }
+
+  validation {
+    condition     = var.resources != null ? (var.resources.volumes != null ? length(var.resources.volumes["name"]) >= 1 && length(var.resources.volumes["name"]) <= 63 && length(regexall("^[A-z][[:word:]-]+[[:alnum:]]$", var.resources.volumes["name"])) > 0 : true) : true
+    error_message = "Volume name length must be between 1 and 63. The first character has to be a letter and the last character can't be a dash."
+  }
+
+  validation {
+    condition     = var.resources != null ? (var.resources.volumes != null ? var.resources.volumes["volume_type"] == "tmfps" : true) : true
+    error_message = "Volume type must be tmfps."
+  }
+}
+
+variable "runtime_channel" {
+  description = "(Optional) The channel of the runtime to use. Only available for some runtimes."
+  type        = string
+  default     = null
+}
+
+variable "beta_settings" {
+  description = "(Optional) Metadata settings that are supplied to this version to enable beta runtime features."
+  type        = map(any)
+  default     = null
+}
+
+variable "runtime_main_executable_path" {
+  description = "(Optional) The path or name of the app's main executable."
+  type        = string
+  default     = null
+}
+
+variable "api_config" {
+  description = "(Optional) Serving configuration for Google Cloud Endpoints."
+  type = list(object({
+    auth_fail_action = string,
+    login            = string,
+    script           = string,
+    security_level   = string,
+    url              = string
+  }))
+  default = null
+
+  validation {
+    condition     = var.api_config != null ? !contains([for auth_fail_action in var.api_config[*].auth_fail_action : (auth_fail_action == null || contains(["AUTH_FAIL_ACTION_REDIRECT", "AUTH_FAIL_ACTION_UNAUTHORIZED"], auth_fail_action)) if auth_fail_action != null], false) : true
+    error_message = "Auth fail action field value must be one of [AUTH_FAIL_ACTION_REDIRECT,AUTH_FAIL_ACTION_UNAUTHORIZED]."
+  }
+
+  validation {
+    condition     = var.api_config != null ? !contains([for login in var.api_config[*].login : (login == null || contains(["LOGIN_OPTIONAL", "LOGIN_ADMIN", "LOGIN_REQUIRED"], login)) if login != null], false) : true
+    error_message = "Login field value must be one of [LOGIN_OPTIONAL, LOGIN_ADMIN, LOGIN_REQUIRED]."
+  }
+
+  validation {
+    condition     = var.api_config != null ? !contains([for security_level in var.api_config[*].security_level : (security_level == null || contains(["SECURE_DEFAULT", "SECURE_NEVER", "SECURE_OPTIONAL", "SECURE_ALWAYS"], security_level)) if security_level != null], false) : true
+    error_message = "Security level field value must be one of [SECURE_DEFAULT, SECURE_NEVER, SECURE_OPTIONAL, SECURE_ALWAYS]."
+  }
+}
+
+variable "default_expiration" {
+  description = "(Optional) Duration that static files should be cached by web proxies and browsers. Only applicable if the corresponding StaticFilesHandler does not specify its own expiration time."
+  type        = string
+  default     = null
+}
+
+variable "nobuild_files_regex" {
+  description = "(Optional) Files that match this pattern will not be built into this version. Only applicable for Go runtimes."
+  type        = string
+  default     = null
+}
+
+variable "container" {
+  description = "(Optional) The Docker image for the container that runs the version."
+  type = list(object({
+    image = string
+  }))
+  default = null
+
+  validation {
+    condition     = var.container != null ? !contains([for image in var.container[*].image : (image == null || length(regexall("^(eu|us|asia)?gcr.io/[[:word:]-]+/[[:word:]-]+(:[[:word:]-]+|@[[:alnum:]]+)$", image)) > 0) if image != null], false) : true
+    error_message = "Security level field value must be one of [SECURE_DEFAULT, SECURE_NEVER, SECURE_OPTIONAL, SECURE_ALWAYS]."
+  }
+}
+
+variable "cloud_build_options" {
+  description = "(Optional) Options for the build operations performed as a part of the version deployment. Only applicable when creating a version using source code directly."
+  type = list(object({
+    app_yaml_path       = string
+    cloud_build_timeout = string
+  }))
+  default = null
+}
+
+variable "endpoints_api_service" {
+  description = "(Optional) Code and application artifacts that make up this version."
+  type = list(object({
+    name                   = string
+    config_id              = string
+    rollout_strategy       = string
+    disable_trace_sampling = bool
+  }))
+  default = null
+
+  validation {
+    condition     = var.endpoints_api_service != null ? !contains([for rollout_strategy in var.endpoints_api_service[*].rollout_strategy : (rollout_strategy == null || contains(["FIXED", "MANAGED"], rollout_strategy)) if rollout_strategy != null], false) : true
+    error_message = "Rollout strategy field value must be one of [FIXED, MANAGED]."
+  }
+}
+
+variable "automatic_scaling_flexible" {
+  description = "(Optional) Automatic scaling of the App Engine flexible."
+  type = object({
+    create           = bool,
+    cool_down_period = string
+    cpu_utilization = object({
+      aggregation_window_length = optional(number),
+      target_utilization        = number
+    }),
+    max_concurrent_requests = optional(number),
+    max_idle_instances      = optional(number),
+    max_total_instances     = optional(number),
+    max_pending_latency     = optional(string),
+    min_idle_instances      = optional(number),
+    min_total_instances     = optional(number),
+    min_pending_latency     = optional(string),
+    request_utilization = optional(object({
+      target_request_count_per_second = number,
+      target_concurrent_requests      = string
+    })),
+    disk_utilization = optional(object({
+      target_read_bytes_per_second  = optional(number),
+      target_read_ops_per_second    = optional(number),
+      target_write_bytes_per_second = optional(number),
+      target_write_ops_per_second   = optional(number)
+    })),
+    network_utilization = optional(object({
+      target_received_bytes_per_second   = optional(number),
+      target_received_packets_per_second = optional(number),
+      target_sent_bytes_per_second       = optional(number),
+      target_sent_packets_per_second     = optional(number)
+    })),
+  })
+  default = null
+
+  validation {
+    condition     = !contains([for cpu_utilization in var.automatic_scaling_flexible[*].cpu_utilization : contains([for target_utilization in cpu_utilization[*].target_utilization : (target_utilization > 0 && target_utilization <= 1)], false)], true)
+    error_message = "Target utilization value must be between 0 and 1."
+  }
+}
+
+variable "manual_scaling_flexible" {
+  description = "(Optional) Manual scaling."
+  type = object({
+    create    = bool,
+    instances = number,
+  })
+  default = {
+    create    = false,
+    instances = 5,
   }
 }
 

@@ -1,5 +1,5 @@
 resource "google_app_engine_standard_app_version" "appengine_standard" {
-  count = var.app_engine_create ? 1 : 0
+  count = var.app_engine_create && var.app_engine_standard_create ? 1 : 0
 
   version_id                = var.service_version
   service                   = var.service
@@ -72,7 +72,7 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
 
   dynamic "automatic_scaling" {
     for_each = {
-      for k, v in var.standard_automatic_scaling[*] : k => v
+      for k, v in var.automatic_scaling_standard[*] : k => v
       if v.create
     }
     content {
@@ -95,7 +95,7 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
 
   dynamic "basic_scaling" {
     for_each = {
-      for k, v in var.standard_basic_scaling[*] : k => v
+      for k, v in var.basic_scaling_standard[*] : k => v
       if v.create
     }
     content {
@@ -106,7 +106,7 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
 
   dynamic "manual_scaling" {
     for_each = {
-      for k, v in var.standard_manual_scaling[*] : k => v
+      for k, v in var.manual_scaling_standard[*] : k => v
       if v.create
     }
     content {
