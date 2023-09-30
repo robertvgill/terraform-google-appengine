@@ -69,7 +69,6 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
       shell = entrypoint.value.shell
     }
   }
-
   dynamic "automatic_scaling" {
     for_each = {
       for k, v in var.automatic_scaling_standard[*] : k => v
@@ -92,7 +91,6 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
       }
     }
   }
-
   dynamic "basic_scaling" {
     for_each = {
       for k, v in var.basic_scaling_standard[*] : k => v
@@ -103,7 +101,6 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
       max_instances = basic_scaling.value.max_instances
     }
   }
-
   dynamic "manual_scaling" {
     for_each = {
       for k, v in var.manual_scaling_standard[*] : k => v
@@ -113,7 +110,6 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
       instances = manual_scaling.value.instances
     }
   }
-
   dynamic "vpc_access_connector" {
     for_each = var.vpc_access_connector[*]
     content {
