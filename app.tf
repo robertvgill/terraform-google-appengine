@@ -1,7 +1,7 @@
 resource "google_app_engine_application" "appengine_app" {
   count = var.app_engine_create ? 1 : 0
 
-  project        = var.project
+  project        = var.project_id
   location_id    = var.location_id
   auth_domain    = var.auth_domain
   database_type  = var.database_type
