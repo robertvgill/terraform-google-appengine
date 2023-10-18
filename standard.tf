@@ -16,7 +16,10 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   version_id                = lookup(each.value, "version_id", null)
 
   dynamic "automatic_scaling" {
-    for_each = { for k, v in each.value : k => v if k == "automatic_scaling" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "automatic_scaling"
+    }
     content {
       max_concurrent_requests = lookup(automatic_scaling.value, "max_concurrent_requests", null)
       max_idle_instances      = lookup(automatic_scaling.value, "max_idle_instances", null)
@@ -40,7 +43,10 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   }
 
   dynamic "basic_scaling" {
-    for_each = { for k, v in each.value : k => v if k == "basic_scaling" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "basic_scaling"
+    }
     content {
       idle_timeout  = lookup(basic_scaling.value, "idle_timeout", null)
       max_instances = lookup(basic_scaling.value, "max_instances", null)
@@ -48,7 +54,10 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   }
 
   dynamic "deployment" {
-    for_each = { for k, v in each.value : k => v if k == "deployment" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "deployment"
+    }
     content {
 
       dynamic "files" {
@@ -77,14 +86,20 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   }
 
   dynamic "entrypoint" {
-    for_each = { for k, v in each.value : k => v if k == "entrypoint" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "entrypoint"
+    }
     content {
       shell = lookup(entrypoint.value, "shell", null)
     }
   }
 
   dynamic "handlers" {
-    for_each = { for k, v in each.value : k => v if k == "handlers" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "handlers"
+    }
     content {
       auth_fail_action            = lookup(handlers.value, "auth_fail_action", null)
       login                       = lookup(handlers.value, "login", null)
@@ -122,7 +137,10 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   }
 
   dynamic "libraries" {
-    for_each = { for k, v in each.value : k => v if k == "libraries" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "libraries"
+    }
     content {
       name    = lookup(libraries.value, "name", null)
       version = lookup(libraries.value, "version", null)
@@ -130,14 +148,20 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   }
 
   dynamic "manual_scaling" {
-    for_each = { for k, v in each.value : k => v if k == "manual_scaling" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "manual_scaling"
+    }
     content {
       instances = lookup(manual_scaling.value, "instances", null)
     }
   }
 
   dynamic "timeouts" {
-    for_each = { for k, v in each.value : k => v if k == "timeouts" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "timeouts"
+    }
     content {
       create = lookup(timeouts.value, "create", null)
       delete = lookup(timeouts.value, "delete", null)
@@ -146,7 +170,10 @@ resource "google_app_engine_standard_app_version" "appengine_standard" {
   }
 
   dynamic "vpc_access_connector" {
-    for_each = { for k, v in each.value : k => v if k == "vpc_access_connector" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "vpc_access_connector"
+    }
     content {
       name = lookup(vpc_access_connector.value, "name", null)
     }

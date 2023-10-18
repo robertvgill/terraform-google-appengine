@@ -22,7 +22,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   version_id                   = lookup(each.value, "version_id", null)
 
   dynamic "api_config" {
-    for_each = { for k, v in each.value : k => v if k == "api_config" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "api_config"
+    }
     content {
       auth_fail_action = lookup(api_config.value, "auth_fail_action", null)
       login            = lookup(api_config.value, "login", null)
@@ -33,7 +36,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "automatic_scaling" {
-    for_each = { for k, v in each.value : k => v if k == "automatic_scaling" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "automatic_scaling"
+    }
     content {
       cool_down_period        = lookup(automatic_scaling.value, "cool_down_period", null)
       max_concurrent_requests = lookup(automatic_scaling.value, "max_concurrent_requests", null)
@@ -96,7 +102,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "deployment" {
-    for_each = { for k, v in each.value : k => v if k == "deployment" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "deployment"
+    }
     content {
 
       dynamic "cloud_build_options" {
@@ -146,7 +155,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "endpoints_api_service" {
-    for_each = { for k, v in each.value : k => v if k == "endpoints_api_service" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "endpoints_api_service"
+    }
     content {
       config_id              = lookup(endpoints_api_service.value, "config_id", null)
       disable_trace_sampling = lookup(endpoints_api_service.value, "disable_trace_sampling", null)
@@ -156,14 +168,20 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "entrypoint" {
-    for_each = { for k, v in each.value : k => v if k == "entrypoint" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "entrypoint"
+    }
     content {
       shell = lookup(entrypoint.value, "shell", null)
     }
   }
 
   dynamic "handlers" {
-    for_each = { for k, v in each.value : k => v if k == "handlers" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "handlers"
+    }
     content {
       auth_fail_action            = lookup(handlers.value, "auth_fail_action", null)
       login                       = lookup(handlers.value, "login", null)
@@ -201,7 +219,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "liveness_check" {
-    for_each = { for k, v in each.value : k => v if k == "liveness_check" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "liveness_check"
+    }
     content {
       check_interval    = lookup(liveness_check.value, "check_interval", null)
       failure_threshold = lookup(liveness_check.value, "failure_threshold", null)
@@ -214,14 +235,20 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "manual_scaling" {
-    for_each = { for k, v in each.value : k => v if k == "manual_scaling" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "manual_scaling"
+    }
     content {
       instances = lookup(manual_scaling.value, "instances", null)
     }
   }
 
   dynamic "network" {
-    for_each = { for k, v in each.value : k => v if k == "network" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "network"
+    }
     content {
       forwarded_ports  = lookup(network.value, "forwarded_ports", null)
       instance_tag     = lookup(network.value, "instance_tag", null)
@@ -232,7 +259,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "readiness_check" {
-    for_each = { for k, v in each.value : k => v if k == "readiness_check" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "readiness_check"
+    }
     content {
       app_start_timeout = lookup(readiness_check.value, "app_start_timeout", null)
       check_interval    = lookup(readiness_check.value, "check_interval", null)
@@ -245,7 +275,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "resources" {
-    for_each = { for k, v in each.value : k => v if k == "resources" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "resources"
+    }
     content {
       cpu       = lookup(readiness_check.value, "cpu", null)
       disk_gb   = lookup(readiness_check.value, "disk_gb", null)
@@ -267,7 +300,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "timeouts" {
-    for_each = { for k, v in each.value : k => v if k == "timeouts" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "timeouts"
+    }
     content {
       create = lookup(timeouts.value, "create", null)
       delete = lookup(timeouts.value, "delete", null)
@@ -276,7 +312,10 @@ resource "google_app_engine_flexible_app_version" "appengine_flexible" {
   }
 
   dynamic "vpc_access_connector" {
-    for_each = { for k, v in each.value : k => v if k == "vpc_access_connector" }
+    for_each = {
+      for k, v in each.value : k => v
+      if k == "vpc_access_connector"
+    }
     content {
       name = lookup(vpc_access_connector.value, "name", null)
     }
