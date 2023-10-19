@@ -82,11 +82,6 @@ variable "firewall_rules" {
   default     = {}
 }
 
-variable "dispatch_rules" {
-  description = "A list of dispatch rule blocks. Each block has a domain, path, and service field."
-  default     = {}
-}
-
 variable "standard_app_versions" {
   description = "Creates a new version within the service of the App Engine standard."
   default     = {}
@@ -95,16 +90,6 @@ variable "standard_app_versions" {
 variable "flexible_app_versions" {
   description = "Creates a new version within the service of the App Engine standard."
   default     = {}
-}
-
-variable "split" {
-  description = "(Required) Mapping that defines fractional HTTP traffic diversion to different versions within the service."
-  type = set(object(
-    {
-      allocations = number
-      shard_by    = string
-    }
-  ))
 }
 
 variable "tags" {
