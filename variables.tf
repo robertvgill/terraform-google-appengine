@@ -97,6 +97,16 @@ variable "flexible_app_versions" {
   default     = {}
 }
 
+variable "split" {
+  description = "(Required) Mapping that defines fractional HTTP traffic diversion to different versions within the service."
+  type = set(object(
+    {
+      allocations = number
+      shard_by    = string
+    }
+  ))
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources."
   type        = map(string)
